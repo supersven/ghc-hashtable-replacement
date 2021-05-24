@@ -3,6 +3,18 @@
 #include <stdlib.h>
 #include "munit/munit.h"
 
+MunitResult test_insertHashTable_duplicatekey(const MunitParameter params[], void* ht) {
+    StgWord key = 1;
+
+    insertHashTable(ht, key, "value_1");
+    insertHashTable(ht, key, "value_2");
+    char* lookedUpValue = lookupHashTable(ht, key);
+
+    munit_assert_string_equal("value_2", lookedUpValue);
+
+    return MUNIT_OK;
+}
+
 MunitResult test_lookupHashTable(const MunitParameter params[], void* ht) {
     StgWord key = 1;
     char value[] = "value";
@@ -63,6 +75,22 @@ MunitResult test_keyCountHashTable_emptyTable(const MunitParameter params[], voi
     return MUNIT_OK;
 }
 
+MunitResult test_keyCountHashTable_sameKey(const MunitParameter params[], void* ht) {
+    StgWord key = 1;
+
+    insertHashTable(ht, key, "value_1");
+    insertHashTable(ht, key, "value_2");
+    insertHashTable(ht, key, "value_3");
+    int afterInsertCount = keyCountHashTable(ht);
+
+    munit_assert_int(afterInsertCount, ==, 3);
+
+    // TODO: I think the count should be 1!
+    // munit_assert_int(afterInsertCount, ==, 3);
+
+    return MUNIT_OK;
+}
+
 MunitResult test_keysHashTable(const MunitParameter params[], void* ht) {
     StgWord key = 1;
     char value[] = "value";
@@ -100,6 +128,122 @@ MunitResult test_keysHashTable_emptyTable(const MunitParameter params[], void* h
     munit_assert_uint64(buf[0], ==, 0);
     munit_assert_int(count, ==, 0);
 
+    return MUNIT_OK;
+}
+
+typedef struct KeyValue_ {
+  StgWord key;
+  char* value;
+} KeyValue;
+
+void testMapHashFn(void *data, StgWord key, const void *value) {
+    KeyValue** visitedEntries = (KeyValue**) data;
+
+    for(int i = 0; i < 3; i++) {
+      if(visitedEntries[i] == NULL){
+        KeyValue* kv = malloc(sizeof(KeyValue));
+        kv->key = key;
+        kv->value = (char*) value;
+        visitedEntries[i] = kv;
+
+        break;
+      }
+    }
+}
+
+MunitResult test_mapHashTable_zeroEntries(const MunitParameter params[], void* ht) {
+    StgWord key = 1;
+    char value[] = "value";
+
+    KeyValue* visitedEntries[3] = {NULL, NULL,NULL};
+
+    mapHashTable(ht, visitedEntries, testMapHashFn);
+
+    munit_assert_null(visitedEntries[0]);
+    munit_assert_null(visitedEntries[1]);
+    munit_assert_null(visitedEntries[2]);
+
+    return MUNIT_OK;
+}
+
+MunitResult test_mapHashTable_oneEntry(const MunitParameter params[], void* ht) {
+    StgWord key = 1;
+    char value[] = "value";
+
+    KeyValue* visitedEntries[3] = {NULL, NULL,NULL};
+
+    insertHashTable(ht, key, value);
+
+    mapHashTable(ht, visitedEntries, testMapHashFn);
+
+    munit_assert_string_equal(value, visitedEntries[0]->value);
+    munit_assert_uint64(key, ==, visitedEntries[0]->key);
+    munit_assert_null(visitedEntries[1]);
+    munit_assert_null(visitedEntries[2]);
+
+    free(visitedEntries[0]);
+    return MUNIT_OK;
+}
+
+
+MunitResult test_mapHashTable_oneDuplicatedEntry(const MunitParameter params[], void* ht) {
+    StgWord key = 1;
+    char value_1[] = "value_1";
+    char value_2[] = "value_2";
+
+    KeyValue* visitedEntries[3] = {NULL, NULL,NULL};
+
+    insertHashTable(ht, key, value_1);
+    insertHashTable(ht, key, value_2);
+
+    mapHashTable(ht, visitedEntries, testMapHashFn);
+
+    munit_assert_string_equal(value_2, visitedEntries[0]->value);
+    munit_assert_uint64(key, ==, visitedEntries[0]->key);
+
+    munit_assert_string_equal(value_1, visitedEntries[1]->value);
+    munit_assert_uint64(key, ==, visitedEntries[1]->key);
+
+    // TODO: I think there should be only one entry: (1, value_2)
+    // munit_assert_null(visitedEntries[1]);
+    munit_assert_null(visitedEntries[2]);
+
+    free(visitedEntries[0]);
+    return MUNIT_OK;
+}
+
+MunitResult test_mapHashTable_twoEntries(const MunitParameter params[], void* ht) {
+    StgWord key_1 = 1;
+    char value_1[] = "value1";
+    StgWord key_2 = 2;
+    char value_2[] = "value2";
+
+    KeyValue* visitedEntries[3] = {NULL, NULL,NULL};
+
+    insertHashTable(ht, key_1, value_1);
+    insertHashTable(ht, key_2, value_2);
+
+    mapHashTable(ht, visitedEntries, testMapHashFn);
+
+    // The traversal order shouldn't be guaranteed.
+    if(key_1 == visitedEntries[0]->key) {
+      munit_assert_uint64(key_1, ==, visitedEntries[0]->key);
+      munit_assert_string_equal(value_1, visitedEntries[0]->value);
+
+      munit_assert_uint64(key_2, ==, visitedEntries[1]->key);
+      munit_assert_string_equal(value_2, visitedEntries[1]->value);
+    } else {
+      munit_assert_uint64(key_2, ==, visitedEntries[0]->key);
+      munit_assert_string_equal(value_2, visitedEntries[0]->value);
+
+      munit_assert_uint64(key_1, ==, visitedEntries[1]->key);
+      munit_assert_string_equal(value_1, visitedEntries[1]->value);
+    }
+
+    munit_assert_null(visitedEntries[2]);
+
+    free(visitedEntries[0]);
+    free(visitedEntries[1]);
     return MUNIT_OK;
 }
 
@@ -173,6 +317,54 @@ MunitTest tests[] = {
   {
     "/test_keysHashTable_emptyTable", /* name */
     &test_keysHashTable_emptyTable, /* test */
+    createHashTable, /* setup */
+    destroyHashTable, /* tear_down */
+    MUNIT_TEST_OPTION_NONE, /* options */
+    NULL /* parameters */
+  },
+  {
+    "/test_mapHashTable_oneEntry", /* name */
+    &test_mapHashTable_oneEntry, /* test */
+    createHashTable, /* setup */
+    destroyHashTable, /* tear_down */
+    MUNIT_TEST_OPTION_NONE, /* options */
+    NULL /* parameters */
+  },
+  {
+    "/test_mapHashTable_zeroEntries", /* name */
+    &test_mapHashTable_zeroEntries, /* test */
+    createHashTable, /* setup */
+    destroyHashTable, /* tear_down */
+    MUNIT_TEST_OPTION_NONE, /* options */
+    NULL /* parameters */
+  },
+  {
+    "/test_mapHashTable_twoEntries", /* name */
+    &test_mapHashTable_twoEntries, /* test */
+    createHashTable, /* setup */
+    destroyHashTable, /* tear_down */
+    MUNIT_TEST_OPTION_NONE, /* options */
+    NULL /* parameters */
+  },
+  {
+    "/test_keyCountHashTable_sameKey", /* name */
+    &test_keyCountHashTable_sameKey, /* test */
+    createHashTable, /* setup */
+    destroyHashTable, /* tear_down */
+    MUNIT_TEST_OPTION_NONE, /* options */
+    NULL /* parameters */
+  }, // test_insertHashTable_duplicatekey
+  {
+    "/test_insertHashTable_duplicatekey", /* name */
+    &test_insertHashTable_duplicatekey, /* test */
+    createHashTable, /* setup */
+    destroyHashTable, /* tear_down */
+    MUNIT_TEST_OPTION_NONE, /* options */
+    NULL /* parameters */
+  },
+  {
+    "/test_mapHashTable_oneDuplicatedEntry", /* name */
+    &test_mapHashTable_oneDuplicatedEntry, /* test */
     createHashTable, /* setup */
     destroyHashTable, /* tear_down */
     MUNIT_TEST_OPTION_NONE, /* options */
