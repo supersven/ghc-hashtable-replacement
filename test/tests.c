@@ -117,7 +117,7 @@ MunitResult test_keysHashTable(const MunitParameter params[], void* ht) {
 
     insertHashTable(ht, key, value);
 
-    StgWord* buf = malloc(sizeof(StgWord));
+    StgWord* buf = munit_new(StgWord);
     int count = keysHashTable(ht, buf, 1);
 
     munit_assert_uint64(buf[0], ==, 1);
@@ -132,7 +132,7 @@ MunitResult test_keysHashTable_emptyArray(const MunitParameter params[], void* h
 
     insertHashTable(ht, key, value);
 
-    StgWord* buf = malloc(sizeof(StgWord));
+    StgWord* buf = munit_new(StgWord);
     int count = keysHashTable(ht, buf, 0);
 
     munit_assert_uint64(buf[0], ==, 0);
@@ -142,7 +142,7 @@ MunitResult test_keysHashTable_emptyArray(const MunitParameter params[], void* h
 }
 
 MunitResult test_keysHashTable_emptyTable(const MunitParameter params[], void* ht) {
-    StgWord* buf = malloc(sizeof(StgWord));
+    StgWord* buf = munit_new(StgWord);
     int count = keysHashTable(ht, buf, 0);
 
     munit_assert_uint64(buf[0], ==, 0);
@@ -161,7 +161,7 @@ void testMapHashFn(void *data, StgWord key, const void *value) {
 
     for(int i = 0; i < 3; i++) {
       if(visitedEntries[i] == NULL){
-        KeyValue* kv = malloc(sizeof(KeyValue));
+        KeyValue* kv = munit_new(KeyValue);
         kv->key = key;
         kv->value = (char*) value;
         visitedEntries[i] = kv;
@@ -272,7 +272,7 @@ void testMapHashFnKeys(void *data, StgWord *key, const void *value) {
 
     for(int i = 0; i < 3; i++) {
       if(visitedEntries[i] == NULL){
-        KeyValue* kv = malloc(sizeof(KeyValue));
+        KeyValue* kv = munit_new(KeyValue);
         kv->key = *key;
         kv->value = (char*) value;
         visitedEntries[i] = kv;
