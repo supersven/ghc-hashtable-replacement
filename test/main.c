@@ -3,7 +3,8 @@
 #include <stddef.h>
 
 static MunitSuite other_suites[] = {
-    {"/mapHashTableKeys", mapHashTableKeys_tests, NULL, 1, MUNIT_SUITE_OPTION_NONE},
+    {"/mapHashTableKeys", mapHashTableKeys_tests, NULL, 1,
+     MUNIT_SUITE_OPTION_NONE},
     {"/keyCountHashTable", keyCountHashTable_tests, NULL, 1,
      MUNIT_SUITE_OPTION_NONE},
     {"/keysHashTable", keysHashTable_tests, NULL, 1, MUNIT_SUITE_OPTION_NONE},
@@ -13,10 +14,8 @@ static MunitSuite other_suites[] = {
      MUNIT_SUITE_OPTION_NONE},
     {"/insertHashTable", insertHashTable_tests, NULL, 1,
      MUNIT_SUITE_OPTION_NONE},
-    {"/mapHashTable", mapHashTable_tests, NULL, 1,
-     MUNIT_SUITE_OPTION_NONE},
-    {"/iterHashTable", iterHashTable_tests, NULL, 1,
-     MUNIT_SUITE_OPTION_NONE},
+    {"/mapHashTable", mapHashTable_tests, NULL, 1, MUNIT_SUITE_OPTION_NONE},
+    {"/iterHashTable", iterHashTable_tests, NULL, 1, MUNIT_SUITE_OPTION_NONE},
     {"/insertStrHashTable", insertStrHashTable_tests, NULL, 1,
      MUNIT_SUITE_OPTION_NONE},
     {"/lookupStrHashTable", lookupHashTable_tests, NULL, 1,
@@ -28,6 +27,8 @@ static MunitSuite other_suites[] = {
     {"/lookupHashTableUnderscore", lookupHashTableUnderscore_tests, NULL, 1,
      MUNIT_SUITE_OPTION_NONE},
     {"/removeHashTableUnderscore", removeHashTableUnderscore_tests, NULL, 1,
+     MUNIT_SUITE_OPTION_NONE},
+    {"/insertHashSet", insertHashSet_tests, NULL, 1,
      MUNIT_SUITE_OPTION_NONE},
     {NULL, NULL, NULL, 1, MUNIT_SUITE_OPTION_NONE}};
 
