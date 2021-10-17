@@ -21,6 +21,8 @@ static MunitSuite other_suites[] = {
      MUNIT_SUITE_OPTION_NONE},
     {"/lookupStrHashTable", lookupHashTable_tests, NULL, 1,
      MUNIT_SUITE_OPTION_NONE},
+    {"/removeStrHashTable", removeStrHashTable_tests, NULL, 1,
+     MUNIT_SUITE_OPTION_NONE},
     {NULL, NULL, NULL, 1, MUNIT_SUITE_OPTION_NONE}};
 
 static const MunitSuite suite = {
