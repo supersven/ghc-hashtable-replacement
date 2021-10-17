@@ -15,7 +15,9 @@ static MunitSuite other_suites[] = {
      MUNIT_SUITE_OPTION_NONE},
     {"/mapHashTable", mapHashTable_tests, NULL, 1,
      MUNIT_SUITE_OPTION_NONE},
-    {"/test_iterHashTable", iterHashTable_tests, NULL, 1,
+    {"/iterHashTable", iterHashTable_tests, NULL, 1,
+     MUNIT_SUITE_OPTION_NONE},
+    {"/insertStrHashTable", insertStrHashTable_tests, NULL, 1,
      MUNIT_SUITE_OPTION_NONE},
     {NULL, NULL, NULL, 1, MUNIT_SUITE_OPTION_NONE}};
 
