@@ -4,3 +4,6 @@
 
 void *createHashTable(const MunitParameter params[], void *user_data);
 void destroyHashTable(void *ht);
+
+void *createStrHashTable(const MunitParameter params[], void *user_data);
+void destroyStrHashTable(void *ht);
