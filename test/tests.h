@@ -12,3 +12,4 @@ extern MunitTest insertStrHashTable_tests[];
 extern MunitTest lookupStrHashTable_tests[];
 extern MunitTest removeStrHashTable_tests[];
 extern MunitTest insertHashTableUnderscore_tests[];
+extern MunitTest lookupHashTableUnderscore_tests[];
