@@ -9,3 +9,4 @@ extern MunitTest insertHashTable_tests[];
 extern MunitTest mapHashTable_tests[];
 extern MunitTest iterHashTable_tests[];
 extern MunitTest insertStrHashTable_tests[];
+extern MunitTest lookupStrHashTable_tests[];
