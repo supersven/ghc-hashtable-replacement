@@ -25,6 +25,8 @@ static MunitSuite other_suites[] = {
      MUNIT_SUITE_OPTION_NONE},
     {"/insertHashTableUnderscore", insertHashTableUnderscore_tests, NULL, 1,
      MUNIT_SUITE_OPTION_NONE},
+    {"/lookupHashTableUnderscore", lookupHashTableUnderscore_tests, NULL, 1,
+     MUNIT_SUITE_OPTION_NONE},
     {NULL, NULL, NULL, 1, MUNIT_SUITE_OPTION_NONE}};
 
 static const MunitSuite suite = {

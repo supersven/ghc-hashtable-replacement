@@ -1,6 +1,6 @@
 #include "lib.h"
 
-int simpleCompare(StgWord key1, StgWord key2) { return key1 == key2; }
+static int simpleCompare(StgWord key1, StgWord key2) { return key1 == key2; }
 
 MunitResult
 test_insertHashTableUnderscore_duplicatekey(const MunitParameter params[],
@@ -17,7 +17,7 @@ test_insertHashTableUnderscore_duplicatekey(const MunitParameter params[],
   return MUNIT_OK;
 }
 
-int indentityHashFunction(const HashTable *table, StgWord key) { return key; }
+static int indentityHashFunction(const HashTable *table, StgWord key) { return key; }
 
 MunitResult test_insertHashTableUnderscore_duplicatekey_indentityHashFunction(
     const MunitParameter params[], void *ht) {
